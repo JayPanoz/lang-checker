@@ -8,9 +8,13 @@ From gist: https://gist.github.com/gregoriopellegrino/c94c46933d660a3db233e7a1c9
 
 ## Usage
 
+In browsers, first load the lib:
+
 ```
 <script type="application/javascript" src="lang-checker.js"></script>
 ```
+
+Then use its public methods:
 
 ```
 <script type="application/javascript">
@@ -27,23 +31,10 @@ From gist: https://gist.github.com/gregoriopellegrino/c94c46933d660a3db233e7a1c9
 
 ## Compile and build
 
-To bundle for browsers:
+To build the dist script/lib:
 
 ```
 npm run build
 ```
 
-This will compile (ES5) and bundle `src` into `bundle/` (via webpack).
-
-To compile for node.js: 
-
-```
-npm run compile
-```
-
-This will compile `src` in `dist` (via babel) so that it’s usable with node.js.
-
-## Notes
-
-- `dist` is meant for node.js (require/import) but you’ll need a DOM (e.g. JSDOM) to make it work.
-- `bundle` is meant for browsers, see usage.
+This will transpile (ES5) and bundle `src` into `bundle/` (via webpack).
