@@ -143,7 +143,7 @@ describe("# Methods", () => {
     assert(errorSpy.calledWith("Langs don’t match for element:"));
   });
 
-  describe("main lang", () => {
+  describe("## Main lang", () => {
     it("should report no lang is specified", () => {
       const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
       <!DOCTYPE html>
@@ -287,5 +287,72 @@ describe("# Methods", () => {
     checker.checkOtherLangs();
 
     assert(logSpy.calledWith("Other languages found: en, ca, it, es"));
+  });
+
+  describe("## Visual aid", () => {
+    beforeEach( () => {
+      const xhtml = `<?xml version="1.0" encoding="utf-8"?>
+      <!DOCTYPE html>
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>Test</title>
+      </head>
+      <body xml:lang="fr">
+      </body>
+      </html>`;
+
+      const { window } = new JSDOM(xhtml, {
+        contentType: "application/xhtml+xml"
+      }); 
+
+      global.document = window.document;
+      global.window = window;
+    });
+
+    it("should add a switcher when the method is called", () => {
+      checker.handleXMLLang();
+      checker.visualAid();
+
+      const input = document.querySelector("input");
+      expect(input.id).to.equal("langChecker-aid-input");
+    });
+
+    it("should add internal styles on enable by default", () => {
+      checker.handleXMLLang();
+      checker.visualAid();
+
+      const input = document.querySelector("input");
+      input.click();
+
+      const stylesheet = document.head.querySelector("style");
+      expect(stylesheet.id).to.equal("langChecker-visual-aid");
+      expect(stylesheet.textContent).to.contain("*[lang]::before");
+    });
+
+    it("should inject an external stylesheet on enable if an argument is passed", () => {
+      checker.handleXMLLang();
+      checker.visualAid("custom-styles.css");
+
+      const input = document.querySelector("input");
+      input.click();
+
+      const stylesheet = document.head.querySelector("link");
+      expect(stylesheet.id).to.equal("langChecker-visual-aid");
+      expect(stylesheet.rel).to.equal("stylesheet");
+      expect(stylesheet.href).to.equal("custom-styles.css");
+    });
+
+    it("should apply visual aid styles", async () => {
+      // We can’t check pseudo element,cf. https://github.com/jsdom/jsdom/issues/1928, so…
+
+      checker.handleXMLLang();
+      checker.visualAid();
+
+      const input = document.querySelector("input");
+      input.click();
+
+      const stylesApplied = window.getComputedStyle(document.body).getPropertyValue("border");
+      expect(stylesApplied).to.equal("1px solid crimson");
+    });
   });
 })
