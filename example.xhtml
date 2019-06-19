@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+  
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Example file</title>
+  <script type="application/javascript" src="../dist/lang-checker.js"></script>
+</head>
+<body xml:lang="fr">
+  <p id="no-match" xml:lang="es" lang="en">Test</p>
+  <p id="match" xml:lang="ca" lang="ca">Test</p>
+  <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
+  
+  <p id="xml-only" xml:lang="es">Test</p>
+  <p id="space" xml:lang="it ">Test</p>
+  
+  <p id="no-bcp-1" xml:lang="fr-x">Test</p>
+  <p id="no-bcp-2" xml:lang="ca-US1">Test</p>
+  <p id="no-bcp-3" xml:lang="i-yolo">Test</p>
+
+  <script type="application/javascript">
+    langChecker.handleXMLLang();
+    langChecker.checkMainLang();
+    langChecker.checkOtherLangs();
+  </script>
+</body>
+</html>
