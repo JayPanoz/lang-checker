@@ -18,7 +18,7 @@ Then use its methods:
 
 ```
 <script type="application/javascript">
-  // Duplicates xml:lang into lang
+  // Handles xhtml and makes it behave nicely with methods below
   langChecker.handleXMLLang();
 
   // Tries to infer the main language of the doc
@@ -27,7 +27,7 @@ Then use its methods:
   // Finds all other languages in the document
   langChecker.checkOtherLangs();
 
-  // Enables visual aid for checking langs visually
+  // Enables visual aid for checking langs visually (e.g. in a browser)
   langChecker.visualAid();
 </script>
 ```
@@ -51,3 +51,33 @@ npm test
 ```
 
 This will run unit tests with mocha.
+
+## Customizing Visual Aid Styles
+
+You can pass a custom stylesheet as an argument in `langChecker.visualAid("../relative-path-to-custom.css")` if you want to apply your own styles. 
+
+If you don’t and just use `langChecker.visualAid()` – without passing any argument –, then default styles will be used.
+
+Default styles are: 
+
+```
+*[lang] {
+  box-sizing: border-box;
+  border: 1px solid crimson;
+  padding: 5px;
+  position: relative;
+}
+*[lang]::before {
+  content: attr(lang);
+  display: inline-block;
+  font-family: sans-serif;
+  font-weight: bold;
+  background-color: crimson;
+  color: white;
+  padding: 5px 10px;
+  margin-right: 10px;
+  position: relative;
+  top: -5px;
+  left: -5px;
+}
+```
