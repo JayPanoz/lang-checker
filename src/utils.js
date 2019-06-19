@@ -48,6 +48,13 @@ const findLangForEl = (el) => {
   return undefined;
 }
 
+/** Checks if xml:lang and lang values match */
+const xmlAndLangMatch = (el) => {
+  const xmlValue = el.getAttribute("xml:lang");
+  const langValue = el.getAttribute("lang");
+  return (xmlValue.toLowerCase() === langValue.toLowerCase());
+}
+
 /** Duplicates xml:lang in a lang attribute */
 const xmlToLang = (el) => {
   el.setAttribute("lang", el.getAttribute("xml:lang"));
@@ -58,5 +65,6 @@ module.exports = {
   hasWhitespace: hasWhitespace,
   isValidBCP47: isValidBCP47,
   findLangForEl: findLangForEl,
+  xmlAndLangMatch: xmlAndLangMatch,
   xmlToLang: xmlToLang
 }

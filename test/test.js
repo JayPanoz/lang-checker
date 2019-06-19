@@ -25,7 +25,7 @@ describe("# Utils", () => {
   global.document = window.document;
   global.window = window;
 
-  it("should return a specified lang", () => {
+  it("should return a lang is specified", () => {
     let lang = utils.langIsSpecified("en");
     expect(lang).to.be.true;
 
@@ -75,6 +75,21 @@ describe("# Utils", () => {
 
     lang = utils.findLangForEl(doesntExist);
     expect(lang).to.be.undefined;
+  });
+
+  it("should check xml:lang and lang values match", () => {
+    let el = document.createElement("p");
+    el.setAttribute("xml:lang", "en");
+    el.setAttribute("lang", "en");
+
+    let match = utils.xmlAndLangMatch(el);
+    
+    expect(match).to.be.true;
+
+    el.setAttribute("lang", "");
+    match = utils.xmlAndLangMatch(el);
+
+    expect(match).to.be.false;
   });
 
   it("should duplicate xml:lang to lang", () => {

@@ -11,14 +11,12 @@ const handleXMLLang = (ctx = document) => {
 
     if (el.hasAttribute("xml:lang") && el.hasAttribute("lang")) {
       // if there is, and there’s also a lang, make sure their values match:
-      const xmlValue = el.getAttribute("xml:lang");
-      const langValue = el.getAttribute("lang");
-      if (xmlValue.toLowerCase() !== langValue.toLowerCase()) {
-        // If value is different then it’s an error
+      if (!utils.xmlAndLangMatch(el)) {
+        // If values are different then it’s an error
         console.error(`Langs don’t match for element:`, el);
       }
     } else if (el.hasAttribute("xml:lang") && !el.hasAttribute("lang")) {
-      // if there is xml:lang but not lang, then add it 
+      // if there is xml:lang but no lang, then add it 
       // Note: this function must be called first so that code below takes over
       utils.xmlToLang(el);
     }
