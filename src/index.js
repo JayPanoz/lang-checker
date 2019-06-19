@@ -1,4 +1,4 @@
-var utils = require("./utils");
+const utils = require("./utils");
 
 /** Handles XHTML (xml namespace) */
 const handleXMLLang = (ctx = document) => {
