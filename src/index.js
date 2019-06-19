@@ -1,12 +1,7 @@
-import { findLangForEl } from "./utils.js";
-
-/** Duplicates xml:lang in a lang attribute */
-export const xmlToLang = (el) => {
-  el.setAttribute("lang", el.getAttribute("xml:lang"));
-}
+var utils = require("./utils");
 
 /** Handles XHTML (xml namespace) */
-export const handleXMLLang = () => {
+const handleXMLLang = () => {
   // Query all elements in the DOM
   const domEls = document.querySelectorAll("*");
 
@@ -25,16 +20,16 @@ export const handleXMLLang = () => {
     } else if (el.hasAttribute("xml:lang") && !el.hasAttribute("lang")) {
       // if there is xml:lang but not lang, then add it 
       // Note: this function must be called first so that code below takes over
-      xmlToLang(el);
+      utils.xmlToLang(el);
     }
   }
 };
 
 /** Tries to infer what the main lang will be */
-export const checkMainLang = () => {
+const checkMainLang = () => {
   // Checking if lang specified for html and body 
-  const docLang = findLangForEl(document.documentElement);
-  const bodyLang = findLangForEl(document.body);
+  const docLang = utils.findLangForEl(document.documentElement);
+  const bodyLang = utils.findLangForEl(document.body);
 
   if (docLang && bodyLang) {
     // If both HTML and BODY langs are specified
@@ -61,7 +56,7 @@ export const checkMainLang = () => {
 };
 
 /** Tries to find all other langs in the doc */
-export const checkOtherLangs = () => {
+const checkOtherLangs = () => {
   // Other languages start here, with an empty array
   let langs = [];
   // We check all elements in body with a lang attribute
@@ -70,7 +65,7 @@ export const checkOtherLangs = () => {
   // For each, we check if we must add the lang to the array
   for (let i = 0; i < els.length; i++) {
     const el = els[i];
-    const langToAdd = findLangForEl(el);
+    const langToAdd = utils.findLangForEl(el);
 
     // If there’s a lang and it isn’t in the array yet, we add it
     if (langToAdd && langs.indexOf(langToAdd.toLowerCase()) === -1) {
@@ -80,3 +75,9 @@ export const checkOtherLangs = () => {
   // Finally we log all the other languages found.
   console.log(`Other languages found: ${langs.toString().replace(/,/g, ", ")}`);
 };
+
+module.exports = {
+  handleXMLLang: handleXMLLang,
+  checkMainLang: checkMainLang,
+  checkOtherLangs: checkOtherLangs
+}

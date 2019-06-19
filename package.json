@@ -2,7 +2,7 @@
   "name": "lang-checker",
   "version": "1.0.0",
   "description": "A module to check your langs",
-  "main": "dist/lang-checker.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha",
     "build": "webpack"
@@ -14,8 +14,9 @@
   "keywords": [
     "lang",
     "bcp47",
-    "HTML",
-    "epub"
+    "html",
+    "epub",
+    "xhtml"
   ],
   "author": "Jiminy Panoz",
   "license": "MIT",

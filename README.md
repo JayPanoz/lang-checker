@@ -14,7 +14,7 @@ In browsers, first load the lib:
 <script type="application/javascript" src="lang-checker.js"></script>
 ```
 
-Then use its public methods:
+Then use its methods:
 
 ```
 <script type="application/javascript">
@@ -29,7 +29,9 @@ Then use its public methods:
 </script>
 ```
 
-## Compile and build
+Check [example.xhtml](example.xhtml) for a practical example.
+
+## Build and test
 
 To build the dist script/lib:
 
@@ -38,3 +40,11 @@ npm run build
 ```
 
 This will transpile (ES5) and bundle `src` into `bundle/` (via webpack).
+
+To test: 
+
+```
+npm test
+```
+
+This will run unit tests with mocha.
