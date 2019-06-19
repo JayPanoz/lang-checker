@@ -26,6 +26,9 @@ Then use its methods:
 
   // Finds all other languages in the document
   langChecker.checkOtherLangs();
+
+  // Enables visual aid for checking langs visually
+  langChecker.visualAid();
 </script>
 ```
 

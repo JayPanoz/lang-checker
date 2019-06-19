@@ -1,4 +1,5 @@
 const utils = require("./utils");
+const defaultStyles = require("./defaultStyles");
 
 /** Handles XHTML (xml namespace) */
 const handleXMLLang = (ctx = document) => {
@@ -21,7 +22,7 @@ const handleXMLLang = (ctx = document) => {
       utils.xmlToLang(el);
     }
   }
-};
+}
 
 /** Tries to infer what the main lang will be */
 const checkMainLang = (root = document.documentElement, body = document.body) => {
@@ -51,7 +52,7 @@ const checkMainLang = (root = document.documentElement, body = document.body) =>
     // Else we warn no lang is set and the navigator’s default will be used
     console.warn(`No lang is set, it will default to the navigator’s: ${navigator.language}.`)
   }
-};
+}
 
 /** Tries to find all other langs in the doc */
 const checkOtherLangs = (ctx = document.body) => {
@@ -72,10 +73,55 @@ const checkOtherLangs = (ctx = document.body) => {
   }
   // Finally we log all the other languages found.
   console.log(`Other languages found: ${langs.toString().replace(/,/g, ", ")}`);
-};
+}
+
+const visualAid = (customStylesheet) => {
+  const label = document.createElement("label");
+  label.setAttribute("style", `position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    font-family: sans-serif;`);
+
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.id = "langChecker-aid-input";
+  input.name = "langChecker-aid-input";
+
+  label.appendChild(input);
+  label.innerHTML += "\nEnable visual aid";
+
+  document.body.insertBefore(label, document.body.firstChild);
+
+  const switcher = document.querySelector("#langChecker-aid-input");
+
+  switcher.addEventListener("change", () => {
+    let stylesheet;
+
+    if (customStylesheet) {
+      stylesheet = document.createElement("link");
+      stylesheet.type = "text/css";
+      stylesheet.id = "langChecker-visual-aid";
+      stylesheet.href = customStylesheet;
+      stylesheet.rel = "stylesheet";
+    } else {
+      stylesheet = document.createElement("style");
+      stylesheet.type = "text/css";
+      stylesheet.id = "langChecker-visual-aid";
+      stylesheet.textContent = defaultStyles;
+    }
+
+    if (switcher.checked) {
+      document.head.appendChild(stylesheet);
+    } else {
+      document.head.removeChild(document.head.querySelector("#langChecker-visual-aid"));
+    }
+  });
+}
 
 module.exports = {
   handleXMLLang: handleXMLLang,
   checkMainLang: checkMainLang,
-  checkOtherLangs: checkOtherLangs
+  checkOtherLangs: checkOtherLangs,
+  visualAid: visualAid
 }
