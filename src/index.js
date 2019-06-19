@@ -1,9 +1,9 @@
 var utils = require("./utils");
 
 /** Handles XHTML (xml namespace) */
-const handleXMLLang = () => {
+const handleXMLLang = (ctx = document) => {
   // Query all elements in the DOM
-  const domEls = document.querySelectorAll("*");
+  const domEls = ctx.querySelectorAll("*");
 
   // For each, check if there is an xml:lang
   for (let i = 0; i < domEls.length; i++) {
@@ -26,10 +26,10 @@ const handleXMLLang = () => {
 };
 
 /** Tries to infer what the main lang will be */
-const checkMainLang = () => {
+const checkMainLang = (root = document.documentElement, body = document.body) => {
   // Checking if lang specified for html and body 
-  const docLang = utils.findLangForEl(document.documentElement);
-  const bodyLang = utils.findLangForEl(document.body);
+  const docLang = utils.findLangForEl(root);
+  const bodyLang = utils.findLangForEl(body);
 
   if (docLang && bodyLang) {
     // If both HTML and BODY langs are specified
@@ -56,11 +56,11 @@ const checkMainLang = () => {
 };
 
 /** Tries to find all other langs in the doc */
-const checkOtherLangs = () => {
+const checkOtherLangs = (ctx = document.body) => {
   // Other languages start here, with an empty array
   let langs = [];
   // We check all elements in body with a lang attribute
-  const els = document.body.querySelectorAll(`*[lang]`);
+  const els = ctx.querySelectorAll(`*[lang]`);
 
   // For each, we check if we must add the lang to the array
   for (let i = 0; i < els.length; i++) {
