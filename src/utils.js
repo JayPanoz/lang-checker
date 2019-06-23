@@ -15,9 +15,9 @@ const langIsSpecified = (string) => {
   }
 }
 
-/** Checks if string contains leading or trailing spaces */
+/** Checks if string contains whitespace */
 const hasWhitespace = (string) => {
-  return string.length > trimmer(string).length;
+  return (/\s/g).test(string)
 }
 
 /** Checks if string is valid BCP47 */
@@ -57,7 +57,12 @@ const xmlAndLangMatch = (el) => {
 
 /** Duplicates xml:lang in a lang attribute */
 const xmlToLang = (el) => {
-  el.setAttribute("lang", el.getAttribute("xml:lang"));
+  // In XML, leading and trailing spaces must be trimmed by UA
+  // we consequently do it when setting lang so that
+  // we don’t get false positives later
+  const xmlValue = el.getAttribute("xml:lang");
+  const langValue = trimmer(xmlValue);
+  el.setAttribute("lang", langValue);
 }
 
 module.exports = {
