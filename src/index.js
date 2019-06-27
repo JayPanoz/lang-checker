@@ -54,8 +54,23 @@ const checkMainLang = (root = document.documentElement, body = document.body) =>
   }
 }
 
+/** Tries to find all hreflangs in the doc */
+const checkHrefLangs = (ctx = document.documentElement) => {
+  let hrefLangs = [];
+  const links = ctx.querySelectorAll(`link[hreflang], a[hreflang]`);
+  for (let i = 0; i < links.length; i++) {
+    const link = links[i];
+    const hrefLangToAdd = utils.findHreflangForLink(link);
+
+    if (hrefLangToAdd && hrefLangs.indexOf(hrefLangToAdd.toLowerCase()) === -1) {
+      hrefLangs.push(hrefLangToAdd.toLowerCase());
+    }
+  }
+  console.log(`hreflangs found: ${utils.arrayToLog(hrefLangs)}`);
+}
+
 /** Tries to find all other langs in the doc */
-const checkOtherLangs = (ctx = document.body) => {
+const checkOtherLangs = (ctx = document.body, hreflangCheck = false) => {
   // Other languages start here, with an empty array
   let langs = [];
   // We check all elements in body with a lang attribute
@@ -72,7 +87,11 @@ const checkOtherLangs = (ctx = document.body) => {
     }
   }
   // Finally we log all the other languages found.
-  console.log(`Other languages found: ${langs.toString().replace(/,/g, ", ")}`);
+  console.log(`Other languages found: ${utils.arrayToLog(langs)}`);
+
+  if (hreflangCheck) {
+    checkHrefLangs();
+  }
 }
 
 const visualAid = (customStylesheet) => {
@@ -122,6 +141,7 @@ const visualAid = (customStylesheet) => {
 module.exports = {
   handleXMLLang: handleXMLLang,
   checkMainLang: checkMainLang,
+  checkHrefLangs: checkHrefLangs,
   checkOtherLangs: checkOtherLangs,
   visualAid: visualAid
 }

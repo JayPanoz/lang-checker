@@ -4,10 +4,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <title>Example file</title>
+  <link href="fr.xhtml" hreflang="fr " />
   <script type="application/javascript" src="dist/lang-checker.js"></script>
 </head>
 <body xml:lang="fr">
-  <p id="no-match" xml:lang="es" lang="en">Test</p>
+  <p id="no-match" xml:lang="es" lang="en">Test <a href="#" hreflang="de">with a link</a></p>
   <p id="match" xml:lang="ca" lang="ca">Test</p>
   <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
   
@@ -21,7 +22,7 @@
   <script type="application/javascript">
     langChecker.handleXMLLang();
     langChecker.checkMainLang();
-    langChecker.checkOtherLangs();
+    langChecker.checkOtherLangs(document.body, true);
     langChecker.visualAid();
   </script>
 </body>

@@ -25,6 +25,13 @@ describe("# Utils", () => {
   global.document = window.document;
   global.window = window;
 
+  it("should transform an array into a readable log", () => {
+    const array = ["de","fr","es"];
+    const log = utils.arrayToLog(array);
+
+    expect(log).to.equal("de, fr, es");
+  });
+
   it("should return a lang is specified", () => {
     let lang = utils.langIsSpecified("en");
     expect(lang).to.be.true;
@@ -256,6 +263,40 @@ describe("# Methods", () => {
     });
   });
 
+  it("should be able to find valid hreflangs in the doc", () => {
+    const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+      <title>Test</title>
+      <script type="application/javascript" src="../dist/lang-checker.js"></script>
+      <link href="fr.xhtml" hreflang="fr " />
+    </head>
+    <body xml:lang="fr">
+      <p id="no-match" xml:lang="es" lang="en">Test <a href="#" hreflang="de">with a link</a></p>
+      <p id="match" xml:lang="ca" lang="ca">Test</p>
+      <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
+      
+      <p id="xml-only" xml:lang="es">Test</p>
+      <p id="space" xml:lang="it ">Test</p>
+      
+      <p id="no-bcp-1" xml:lang="fr-x">Test</p>
+      <p id="no-bcp-2" xml:lang="ca-US1">Test</p>
+      <p id="no-bcp-3" xml:lang="i-yolo">Test</p>
+    </body>
+    </html>`, {
+      contentType: "application/xhtml+xml"
+    }); 
+    
+    global.document = window.document;
+    global.window = window;
+
+    checker.checkHrefLangs();
+
+    assert(errorSpy.calledWith("There is a space in 'fr ' therefore it isn’t a valid BCP47 language tag for link:"));
+    assert(logSpy.calledWith("hreflangs found: de"));
+  });
+
   it("should be able to find other valid langs in the doc", () => {
     const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
     <!DOCTYPE html>
@@ -263,9 +304,10 @@ describe("# Methods", () => {
     <head>
       <title>Test</title>
       <script type="application/javascript" src="../dist/lang-checker.js"></script>
+      <link href="fr.xhtml" hreflang="fr " />
     </head>
     <body xml:lang="fr">
-      <p id="no-match" xml:lang="es" lang="en">Test</p>
+      <p id="no-match" xml:lang="es" lang="en">Test <a href="#" hreflang="de">with a link</a></p>
       <p id="match" xml:lang="ca" lang="ca">Test</p>
       <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
       
@@ -287,6 +329,11 @@ describe("# Methods", () => {
     checker.checkOtherLangs();
 
     assert(logSpy.calledWith("Other languages found: en, ca, it, es"));
+
+    checker.checkOtherLangs(document.body, true);
+
+    assert(logSpy.calledWith("Other languages found: en, ca, it, es"));
+    assert(logSpy.calledWith("hreflangs found: de"));
   });
 
   describe("## Visual aid", () => {

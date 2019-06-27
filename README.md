@@ -24,6 +24,9 @@ Then use its methods:
   // Tries to infer the main language of the doc
   langChecker.checkMainLang();
 
+  // Finds all hreflangs in the document
+  langChecker.checkHrefLangs();
+
   // Finds all other languages in the document
   langChecker.checkOtherLangs();
 
@@ -51,6 +54,38 @@ npm test
 ```
 
 This will run unit tests with mocha.
+
+## Methods and their parameters
+
+Although methods can be used AS-IS, you can also pass arguments if needed.
+
+### handleXMLLang(ctx)
+
+`ctx` is the context in which the function must run and transform `xml:lang` to `lang`. It expects an element.
+
+Default is `document`.
+
+### checkMainLang(root, body)
+
+`root` is the root element – default is `document.documentElement`.
+
+`body` is the body element – default is `document.body`.
+
+### checkHrefLangs(ctx)
+
+`ctx` is the context in which the function must run and check `hreflang`. It expects an element.
+
+Default is `document.documentElement`.
+
+### checkOtherLangs(ctx, hreflangCheck)
+
+`ctx` is the context in which the function must run and check `lang`. It expects an element. Default is `document.body`.
+
+`hreflangCheck` is a boolean that enable/disable the checking of hreflangs when checking for other languages (`checkHrefLang()`). Default is `false`.
+
+### visualAid(customStylesheet)
+
+`customStylesheet` is the relative path to a custom stylesheet for the visual aid (as a string). There is no default. See section below for further details.
 
 ## Customizing Visual Aid Styles
 
