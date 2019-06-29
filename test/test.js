@@ -32,6 +32,17 @@ describe("# Utils", () => {
     expect(log).to.equal("de, fr, es");
   });
 
+  it("should transform an object into a readable log", () => {
+    const obj = {
+      "de": 0.09,
+      "fr": 0.36,
+      "es": 0.18
+    };
+    const log = utils.langsObjectToLog(obj);
+
+    expect(log).to.equal("de (9%), fr (36%), es (18%)");
+  });
+
   it("should return a lang is specified", () => {
     let lang = utils.langIsSpecified("en");
     expect(lang).to.be.true;
@@ -106,6 +117,50 @@ describe("# Utils", () => {
     utils.xmlToLang(el);
 
     expect(el.getAttribute("lang")).to.equal("en");
+  });
+
+  it("should deep clone a node", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<style>*{}</style><p><span class="drop-cap">C</span>all me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.</p><script>console.log("Hello")</script>`;
+
+    const clone = utils.cloneNode(node);
+
+    // What we care about is the markup so we check outerHTML and not deep equality
+    expect(clone.outerHTML).to.equal(`<div xmlns="http://www.w3.org/1999/xhtml"><style>*{}</style><p><span class="drop-cap">C</span>all me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.</p><script>console.log("Hello")</script></div>`);
+  });
+
+  it("should normalize and clean a node by removing comments and cdata", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<!-- This is a comment that should be removed -->This is some text.<script><![CDATA[if (document.body.length > 1) {console.log("Hello")}]]></script>`;
+
+    utils.cleanNode(node);
+    expect(node.outerHTML).to.equal(`<div xmlns="http://www.w3.org/1999/xhtml">This is some text.<script></script></div>`);
+  });
+
+  it("should sanitize a node by removing scripts and styles", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<style>*{font-size: 100%}</style>This is some text.<script>console.log("hello")</script>`;
+
+    utils.sanitizeNode(node);
+    expect(node.outerHTML).to.equal(`<div xmlns="http://www.w3.org/1999/xhtml">This is some text.</div>`);
+  });
+
+  it("should return the “real” text content of a node", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<!-- This is a comment that should be removed -->This is some text followed by an empty element<span> </span> we ignore.<style>*{font-size: 100%}</style>This is some other text.<script>console.log("hello")</script>`;
+
+    const text = utils.getTextContent(node);
+    expect(text).to.equal("This is some text followed by an empty element we ignore.This is some other text.");
+  });
+
+  it("should return the weight of a node in a reference text", () => {
+    const referenceText = `This is some text followed by an empty element we ignore.This is some other text.C’est une phrase en français.`;
+
+    const node = document.createElement("div");
+    node.textContent = `C’est une phrase en français.`;
+
+    const result = utils.getWeight(node, referenceText);
+    expect(result).to.equal(0.264);
   });
 });
 
@@ -328,11 +383,11 @@ describe("# Methods", () => {
     checker.handleXMLLang();
     checker.checkOtherLangs();
 
-    assert(logSpy.calledWith("Other languages found: en, ca, it, es"));
+    assert(logSpy.calledWith("Other languages found: en (36.4%), ca (9.1%), it (18.2%), es (9.1%)"));
 
     checker.checkOtherLangs(document.body, true);
 
-    assert(logSpy.calledWith("Other languages found: en, ca, it, es"));
+    assert(logSpy.calledWith("Other languages found: en (36.4%), ca (9.1%), it (18.2%), es (9.1%)"));
     assert(logSpy.calledWith("hreflangs found: de"));
   });
 

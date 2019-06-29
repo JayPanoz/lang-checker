@@ -5,8 +5,19 @@ const trimmer = (string) => {
   return string.trim();
 }
 
+/** Converts an array to string and makes it more readable for logs */
 const arrayToLog = (array) => {
   return array.toString().replace(/,/g, ", ")
+}
+
+/** Converts the langs object to string and makes it more readable for logs */
+const langsObjectToLog = (obj) => {
+  let string = "";
+  for (let prop in obj) {
+    const percentage = (obj[prop] * 100) + "%";
+    string += `${prop} (${percentage}), `;
+  }
+  return string.substring(0, string.length - 2)
 }
 
 /** Checks if lang is specified */
@@ -92,13 +103,60 @@ const xmlToLang = (el) => {
   el.setAttribute("lang", langValue);
 }
 
+/** Clones a node */
+const cloneNode = (node) => {
+  return node.cloneNode(true);
+}
+
+/** Recursively removes comments and CDATA, and normalizes whitespace */
+const cleanNode = (node) => {
+  for (let i = 0; i < node.childNodes.length; i++) {
+    var child = node.childNodes[i];
+    if (child.nodeType === 8 || child.nodeType === 4 || (child.nodeType === 3 && !/\S/.test(child.nodeValue))) {
+      node.removeChild(child);
+      i--;
+    } else if (child.nodeType === 1) {
+      cleanNode(child);
+    }
+  }
+}
+
+/** Removes scripts and styles from a node */
+const sanitizeNode = (node) => {
+  const elementsToRemove = node.querySelectorAll("script, style, #langChecker-aid-label");
+  for (let i = 0; i < elementsToRemove.length; i++) {
+    const elementToRemove = elementsToRemove[i];
+    elementToRemove.parentElement.removeChild(elementToRemove);
+  }
+}
+
+/** Returns the text content of a node w/o scripts, styles, comments, etc. */
+const getTextContent = (node) => {
+  const clone = cloneNode(node);
+  cleanNode(clone);
+  sanitizeNode(clone);
+  return clone.textContent;
+}
+
+/** Computes the weight of text for a language in a given reference (textContent) */
+const getWeight = (node, referenceText = getTextContent(document.body)) => {
+  const nodeContent = getTextContent(node);
+  return parseFloat((nodeContent.length / referenceText.length).toFixed(3));
+}
+
 module.exports = {
   arrayToLog: arrayToLog,
+  langsObjectToLog: langsObjectToLog,
   langIsSpecified: langIsSpecified,
   hasWhitespace: hasWhitespace,
   isValidBCP47: isValidBCP47,
   findLangForEl: findLangForEl,
   findHreflangForLink: findHreflangForLink,
   xmlAndLangMatch: xmlAndLangMatch,
-  xmlToLang: xmlToLang
+  xmlToLang: xmlToLang,
+  cloneNode: cloneNode,
+  cleanNode: cleanNode,
+  sanitizeNode: sanitizeNode,
+  getTextContent: getTextContent,
+  getWeight: getWeight
 }

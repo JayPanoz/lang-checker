@@ -69,12 +69,13 @@ const checkHrefLangs = (ctx = document.documentElement) => {
   console.log(`hreflangs found: ${utils.arrayToLog(hrefLangs)}`);
 }
 
-/** Tries to find all other langs in the doc */
+/** Tries to find all other langs and their percentage in the doc */
 const checkOtherLangs = (ctx = document.body, hreflangCheck = false) => {
-  // Other languages start here, with an empty array
-  let langs = [];
+  // Other languages start here, with an empty object
+  let langs = {};
   // We check all elements in body with a lang attribute
   const els = ctx.querySelectorAll(`*[lang]`);
+  const textReference = utils.getTextContent(ctx);
 
   // For each, we check if we must add the lang to the array
   for (let i = 0; i < els.length; i++) {
@@ -82,12 +83,18 @@ const checkOtherLangs = (ctx = document.body, hreflangCheck = false) => {
     const langToAdd = utils.findLangForEl(el);
 
     // If there’s a lang and it isn’t in the array yet, we add it
-    if (langToAdd && langs.indexOf(langToAdd.toLowerCase()) === -1) {
-      langs.push(langToAdd.toLowerCase());
+    if (langToAdd) {
+      const langProp = langToAdd.toLowerCase();
+
+      if (!langs.hasOwnProperty(langProp)) {
+        langs[langProp] = utils.getWeight(el, textReference);
+      } else if (langs.hasOwnProperty(langProp)) {
+        langs[langProp] += utils.getWeight(el, textReference);
+      }
     }
   }
   // Finally we log all the other languages found.
-  console.log(`Other languages found: ${utils.arrayToLog(langs)}`);
+  console.log(`Other languages found: ${utils.langsObjectToLog(langs)}`);
 
   if (hreflangCheck) {
     checkHrefLangs();
@@ -101,6 +108,7 @@ const visualAid = (customStylesheet) => {
     right: 10px;
     z-index: 10;
     font-family: sans-serif;`);
+  label.id = "langChecker-aid-label";
 
   const input = document.createElement("input");
   input.type = "checkbox";
