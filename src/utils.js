@@ -92,6 +92,41 @@ const xmlToLang = (el) => {
   el.setAttribute("lang", langValue);
 }
 
+/** Clones a node */
+const cloneNode = (node) => {
+  return node.cloneNode(true);
+}
+
+/** Recursively removes comments and CDATA, and normalizes whitespace */
+const cleanNode = (node) => {
+  for (let i = 0; i < node.childNodes.length; i++) {
+    var child = node.childNodes[i];
+    if (child.nodeType === 8 || child.nodeType === 4 || (child.nodeType === 3 && !/\S/.test(child.nodeValue))) {
+      node.removeChild(child);
+      i--;
+    } else if (child.nodeType === 1) {
+      cleanNode(child);
+    }
+  }
+}
+
+/** Removes scripts and styles from a node */
+const sanitizeNode = (node) => {
+  const elementsToRemove = node.querySelectorAll("script, style, #langChecker-aid-label");
+  for (let i = 0; i < elementsToRemove.length; i++) {
+    const elementToRemove = elementsToRemove[i];
+    elementToRemove.parentElement.removeChild(elementToRemove);
+  }
+}
+
+/** Returns the text content of a node w/o scripts, styles, comments, etc. */
+const getTextContent = (node) => {
+  const clone = cloneNode(node);
+  cleanNode(clone);
+  sanitizeNode(clone);
+  return clone.textContent;
+}
+
 module.exports = {
   arrayToLog: arrayToLog,
   langIsSpecified: langIsSpecified,
@@ -100,5 +135,9 @@ module.exports = {
   findLangForEl: findLangForEl,
   findHreflangForLink: findHreflangForLink,
   xmlAndLangMatch: xmlAndLangMatch,
-  xmlToLang: xmlToLang
+  xmlToLang: xmlToLang,
+  cloneNode: cloneNode,
+  cleanNode: cleanNode,
+  sanitizeNode: sanitizeNode,
+  getTextContent: getTextContent
 }

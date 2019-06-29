@@ -107,6 +107,40 @@ describe("# Utils", () => {
 
     expect(el.getAttribute("lang")).to.equal("en");
   });
+
+  it("should deep clone a node", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<style>*{}</style><p><span class="drop-cap">C</span>all me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.</p><script>console.log("Hello")</script>`;
+
+    const clone = utils.cloneNode(node);
+
+    // What we care about is the markup so we check outerHTML and not deep equality
+    expect(clone.outerHTML).to.equal(`<div xmlns="http://www.w3.org/1999/xhtml"><style>*{}</style><p><span class="drop-cap">C</span>all me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.</p><script>console.log("Hello")</script></div>`);
+  });
+
+  it("should normalize and clean a node by removing comments and cdata", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<!-- This is a comment that should be removed -->This is some text.<script><![CDATA[if (document.body.length > 1) {console.log("Hello")}]]></script>`;
+
+    utils.cleanNode(node);
+    expect(node.outerHTML).to.equal(`<div xmlns="http://www.w3.org/1999/xhtml">This is some text.<script></script></div>`);
+  });
+
+  it("should sanitize a node by removing scripts and styles", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<style>*{font-size: 100%}</style>This is some text.<script>console.log("hello")</script>`;
+
+    utils.sanitizeNode(node);
+    expect(node.outerHTML).to.equal(`<div xmlns="http://www.w3.org/1999/xhtml">This is some text.</div>`);
+  });
+
+  it("should return the “real” text content of a node", () => {
+    const node = document.createElement("div");
+    node.innerHTML = `<!-- This is a comment that should be removed -->This is some text followed by an empty element<span> </span> we ignore.<style>*{font-size: 100%}</style>This is some other text.<script>console.log("hello")</script>`;
+
+    const text = utils.getTextContent(node);
+    expect(text).to.equal("This is some text followed by an empty element we ignore.This is some other text.");
+  });
 });
 
 describe("# Methods", () => {

@@ -101,6 +101,7 @@ const visualAid = (customStylesheet) => {
     right: 10px;
     z-index: 10;
     font-family: sans-serif;`);
+  label.id = "langChecker-aid-label";
 
   const input = document.createElement("input");
   input.type = "checkbox";
