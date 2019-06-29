@@ -5,8 +5,19 @@ const trimmer = (string) => {
   return string.trim();
 }
 
+/** Converts an array to string and makes it more readable for logs */
 const arrayToLog = (array) => {
   return array.toString().replace(/,/g, ", ")
+}
+
+/** Converts the langs object to string and makes it more readable for logs */
+const langsObjectToLog = (obj) => {
+  let string = "";
+  for (let prop in obj) {
+    const percentage = (obj[prop] * 100) + "%";
+    string += `${prop} (${percentage}), `;
+  }
+  return string.substring(0, string.length - 2)
 }
 
 /** Checks if lang is specified */
@@ -127,8 +138,15 @@ const getTextContent = (node) => {
   return clone.textContent;
 }
 
+/** Computes the weight of text for a language in a given reference (textContent) */
+const getWeight = (node, referenceText = getTextContent(document.body)) => {
+  const nodeContent = getTextContent(node);
+  return parseFloat((nodeContent.length / referenceText.length).toFixed(3));
+}
+
 module.exports = {
   arrayToLog: arrayToLog,
+  langsObjectToLog: langsObjectToLog,
   langIsSpecified: langIsSpecified,
   hasWhitespace: hasWhitespace,
   isValidBCP47: isValidBCP47,
@@ -139,5 +157,6 @@ module.exports = {
   cloneNode: cloneNode,
   cleanNode: cleanNode,
   sanitizeNode: sanitizeNode,
-  getTextContent: getTextContent
+  getTextContent: getTextContent,
+  getWeight: getWeight
 }

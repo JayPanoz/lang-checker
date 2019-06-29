@@ -32,6 +32,17 @@ describe("# Utils", () => {
     expect(log).to.equal("de, fr, es");
   });
 
+  it("should transform an object into a readable log", () => {
+    const obj = {
+      "de": 0.09,
+      "fr": 0.36,
+      "es": 0.18
+    };
+    const log = utils.langsObjectToLog(obj);
+
+    expect(log).to.equal("de (9%), fr (36%), es (18%)");
+  });
+
   it("should return a lang is specified", () => {
     let lang = utils.langIsSpecified("en");
     expect(lang).to.be.true;
@@ -140,6 +151,16 @@ describe("# Utils", () => {
 
     const text = utils.getTextContent(node);
     expect(text).to.equal("This is some text followed by an empty element we ignore.This is some other text.");
+  });
+
+  it("should return the weight of a node in a reference text", () => {
+    const referenceText = `This is some text followed by an empty element we ignore.This is some other text.C’est une phrase en français.`;
+
+    const node = document.createElement("div");
+    node.textContent = `C’est une phrase en français.`;
+
+    const result = utils.getWeight(node, referenceText);
+    expect(result).to.equal(0.264);
   });
 });
 
@@ -362,11 +383,11 @@ describe("# Methods", () => {
     checker.handleXMLLang();
     checker.checkOtherLangs();
 
-    assert(logSpy.calledWith("Other languages found: en, ca, it, es"));
+    assert(logSpy.calledWith("Other languages found: en (36.4%), ca (9.1%), it (18.2%), es (9.1%)"));
 
     checker.checkOtherLangs(document.body, true);
 
-    assert(logSpy.calledWith("Other languages found: en, ca, it, es"));
+    assert(logSpy.calledWith("Other languages found: en (36.4%), ca (9.1%), it (18.2%), es (9.1%)"));
     assert(logSpy.calledWith("hreflangs found: de"));
   });
 
