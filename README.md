@@ -105,6 +105,8 @@ Default styles are:
 
 ## Dev
 
+You must have [node and npm installed](https://nodejs.org/en/) on your computer.
+
 ### Install
 
 You can either fork the repo if you aim to help improve the lib via PRs. Or you can clone it directly if you don’t.
