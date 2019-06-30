@@ -26,14 +26,18 @@ describe("# Utils", () => {
   global.window = window;
 
   it("should transform an array into a readable log", () => {
-    const array = ["de","fr","es"];
-    const log = utils.arrayToLog(array);
+    let array = ["de","fr","es"];
+    let log = utils.arrayToLog(array);
 
     expect(log).to.equal("de, fr, es");
+
+    array = [];
+    log = utils.arrayToLog(array);
+    expect(log).to.equal("none");
   });
 
   it("should transform an object into a readable log", () => {
-    const obj = {
+    let obj = {
       "de": 0.09,
       "fr": 0.36,
       "es": 0.18
@@ -47,6 +51,10 @@ describe("# Utils", () => {
     log = utils.langsObjectToLog(obj, true);
 
     expect(log).to.equal("fr (36%), es (18%), de (9%)");
+
+    obj = {};
+    log = utils.langsObjectToLog(obj);
+    expect(log).to.equal("none");
   });
 
   it("should return a lang is specified", () => {

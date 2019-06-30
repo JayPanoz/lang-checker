@@ -9,7 +9,11 @@ const trimmer = (string) => {
 const arrayToLog = (array) => {
   // array.toString() will separate items with a comma
   // so we make a regex to add a space to improve readability
-  return array.toString().replace(/,/g, ", ");
+  if (array.length > 0) {
+    return array.toString().replace(/,/g, ", ");
+  } else {
+    return "none";
+  }
 }
 
 /** Converts the langs object to string and makes it more readable for logs */
@@ -27,18 +31,22 @@ const langsObjectToLog = (obj, sorted) => {
     obj.sort((a, b) => b.weight - a.weight);
   }
 
-  // We create an empty string
-  let string = "";
-  for (let i = 0; i < obj.length; i++) {
-    const prop = obj[i].lang;
-    // for each prop we transform the value to a percentage
-    const percentage = (obj[i].weight * 100) + "%";
+  if (obj.length > 0) {
+    // We create an empty string
+    let string = "";
+    for (let i = 0; i < obj.length; i++) {
+      const prop = obj[i].lang;
+      // for each prop we transform the value to a percentage
+      const percentage = (obj[i].weight * 100) + "%";
     
-    // We add the lang (prop) and its percentage to the existing string
-    string += `${prop} (${percentage}), `;
+      // We add the lang (prop) and its percentage to the existing string
+      string += `${prop} (${percentage}), `;
+    }
+    // We return the string w/o the coma and space we added for the last item
+    return string.substring(0, string.length - 2);
+  } else {
+    return "none";
   }
-  // We return the string w/o the coma and space we added for the last item
-  return string.substring(0, string.length - 2);
 }
 
 /** Checks if lang is specified */
