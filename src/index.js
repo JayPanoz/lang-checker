@@ -55,7 +55,7 @@ const checkMainLang = (root = document.documentElement, body = document.body) =>
 }
 
 /** Tries to find all hreflangs in the doc */
-const checkHrefLangs = (ctx = document.documentElement) => {
+const checkHrefLangs = (ctx = document) => {
   let hrefLangs = [];
   const links = ctx.querySelectorAll(`link[hreflang], a[hreflang]`);
   for (let i = 0; i < links.length; i++) {

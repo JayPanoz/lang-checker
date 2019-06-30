@@ -75,7 +75,7 @@ Default is `document`.
 
 `ctx` is the context in which the function must run and check `hreflang`. It expects an element.
 
-Default is `document.documentElement` (to account for `link` elements).
+Default is `document` (to account for `link` elements in `head`).
 
 ### checkOtherLangs(sorted, ctx)
 
