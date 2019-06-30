@@ -468,7 +468,7 @@ describe("# Methods", () => {
       expect(stylesheet.href).to.equal("custom-styles.css");
     });
 
-    it("should apply visual aid styles", async () => {
+    it("should apply visual aid styles", () => {
       // We can’t check pseudo element, cf. https://github.com/jsdom/jsdom/issues/1928, so…
 
       checker.handleXMLLang();
