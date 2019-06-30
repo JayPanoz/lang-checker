@@ -152,7 +152,7 @@ const sanitizeNode = (node) => {
   const elementsToRemove = node.querySelectorAll("script, style, #langChecker-aid-label");
   for (let i = 0; i < elementsToRemove.length; i++) {
     const elementToRemove = elementsToRemove[i];
-    elementToRemove.parentElement.removeChild(elementToRemove);
+    node.removeChild(elementToRemove);
   }
 }
 
