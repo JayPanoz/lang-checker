@@ -13,12 +13,26 @@ const arrayToLog = (array) => {
 }
 
 /** Converts the langs object to string and makes it more readable for logs */
-const langsObjectToLog = (obj) => {
+const langsObjectToLog = (obj, sorted) => {
+  // Converting lang to an array of langObject (lang: weight)
+  obj = Object.keys(obj).map(key => {
+    const langObj = {};
+    langObj.lang = key;
+    langObj.weight = obj[key];
+    return langObj;
+  });
+
+  // If sortable is true
+  if (sorted) {
+    obj.sort((a, b) => b.weight - a.weight);
+  }
+
   // We create an empty string
   let string = "";
-  for (let prop in obj) {
+  for (let i = 0; i < obj.length; i++) {
+    const prop = obj[i].lang;
     // for each prop we transform the value to a percentage
-    const percentage = (obj[prop] * 100) + "%";
+    const percentage = (obj[i].weight * 100) + "%";
     
     // We add the lang (prop) and its percentage to the existing string
     string += `${prop} (${percentage}), `;

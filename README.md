@@ -75,21 +75,21 @@ Default is `document`.
 
 `ctx` is the context in which the function must run and check `hreflang`. It expects an element.
 
-Default is `document.documentElement`.
+Default is `document.documentElement` (to account for `link` elements).
 
-### checkOtherLangs(ctx, hreflangCheck)
+### checkOtherLangs(sorted, ctx)
 
 `ctx` is the context in which the function must run and check `lang`. It expects an element. Default is `document.body`.
 
-`hreflangCheck` is a boolean that enable/disable the checking of hreflangs when checking for other languages (`checkHrefLang()`). Default is `false`.
+`sorted` is a boolean that enables the sorting of languages depending on their weight in the document. Default is `false`.
 
 ### visualAid(customStylesheet)
 
-`customStylesheet` is the relative path to a custom stylesheet for the visual aid (as a string). There is no default. See section below for further details.
+`customStylesheet` is the path to a custom stylesheet for the visual aid (as a string). There is no default. See section below for further details.
 
 ## Customizing Visual Aid Styles
 
-You can pass a custom stylesheet as an argument in `langChecker.visualAid("../relative-path-to-custom.css")` if you want to apply your own styles. 
+You can pass a custom stylesheet as an argument in `langChecker.visualAid("../path/to/custom.css")` if you want to apply your own styles. 
 
 If you don’t and just use `langChecker.visualAid()` – without passing any argument –, then default styles will be used.
 
