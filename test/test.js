@@ -42,8 +42,7 @@ describe("# Utils", () => {
       "fr": 0.36,
       "es": 0.18
     };
-
-    let log = utils.langsObjectToLog(obj);
+    let log = utils.langsObjectToLog(obj, false);
 
     expect(log).to.equal("de (9%), fr (36%), es (18%)");
 
@@ -53,7 +52,7 @@ describe("# Utils", () => {
     expect(log).to.equal("fr (36%), es (18%), de (9%)");
 
     obj = {};
-    log = utils.langsObjectToLog(obj);
+    log = utils.langsObjectToLog(obj, false);
     expect(log).to.equal("none");
   });
 
@@ -110,7 +109,7 @@ describe("# Utils", () => {
   });
 
   it("should check xml:lang and lang values match", () => {
-    let el = document.createElement("p");
+    const el = document.createElement("p");
     el.setAttribute("xml:lang", "en");
     el.setAttribute("lang", "en");
 
@@ -137,6 +136,13 @@ describe("# Utils", () => {
     utils.xmlToLang(el);
 
     expect(el.getAttribute("lang")).to.equal("en");
+
+    // If there is a space in xml:lang, it should trim it
+    el.setAttribute("xml:lang", " fr");
+
+    utils.xmlToLang(el);
+
+    expect(el.getAttribute("lang")).to.equal("fr");
   });
 
   it("should deep clone a node", () => {
@@ -199,7 +205,7 @@ describe("# Methods", () => {
     logSpy.restore();
     warnSpy.restore();
     errorSpy.restore();
-  })
+  });
 
   it("should be able to handle xml:lang", () => {
     const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
@@ -223,6 +229,77 @@ describe("# Methods", () => {
     expect(html.getAttribute("lang")).to.equal("en");
 
     assert(errorSpy.calledWith("Langs don’t match for element:"));
+  });
+
+  it("should be able to find valid hreflangs in the doc", () => {
+    const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+      <title>Test</title>
+      <script type="application/javascript" src="../dist/lang-checker.js"></script>
+      <link href="fr.xhtml" hreflang="fr " />
+    </head>
+    <body xml:lang="fr">
+      <p id="match" xml:lang="es" lang="es">Test <a href="#" hreflang="de">with a link</a></p>
+      <p id="match-with-space" xml:lang="ca " lang="ca">Test</p>
+      <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
+      
+      <p id="xml-only" xml:lang="es">Test</p>
+      <p id="space" xml:lang="it ">Test</p>
+      
+      <p id="no-bcp-1" xml:lang="fr-x">Test</p>
+      <p id="no-bcp-2" xml:lang="ca-US1">Test</p>
+      <p id="no-bcp-3" xml:lang="i-yolo">Test</p>
+    </body>
+    </html>`, {
+      contentType: "application/xhtml+xml"
+    }); 
+    
+    global.document = window.document;
+    global.window = window;
+
+    checker.checkHrefLangs();
+
+    assert(errorSpy.calledWith("There is a space in 'fr ' therefore it isn’t a valid BCP47 language tag for link:"));
+    assert(logSpy.calledWith("hreflangs found: de"));
+  });
+
+  it("should be able to find other valid langs in the doc", () => {
+    const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+      <title>Test</title>
+      <script type="application/javascript" src="../dist/lang-checker.js"></script>
+    </head>
+    <body xml:lang="fr">
+      <p id="match" xml:lang="es" lang="es">Test</p>
+      <p id="match-with-space" xml:lang="ca " lang="ca">Test</p>
+      <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
+      
+      <p id="xml-only" xml:lang="es">Test</p>
+      <p id="space" xml:lang="it ">Test</p>
+      
+      <p id="no-bcp-1" xml:lang="fr-x">Test</p>
+      <p id="no-bcp-2" xml:lang="ca-US1">Test</p>
+      <p id="no-bcp-3" xml:lang="i-yolo">Test</p>
+    </body>
+    </html>`, {
+      contentType: "application/xhtml+xml"
+    }); 
+    
+    global.document = window.document;
+    global.window = window;
+
+    checker.handleXMLLang();
+    checker.checkOtherLangs();
+
+    assert(logSpy.calledWith("Other languages found: es (25%), ca (12.5%), it (25%)"));
+
+    // Test sort
+    checker.checkOtherLangs(document.body, true);
+    assert(logSpy.calledWith("Other languages found: es (25%), it (25%), ca (12.5%)"));
   });
 
   describe("## Main lang", () => {
@@ -338,78 +415,6 @@ describe("# Methods", () => {
     });
   });
 
-  it("should be able to find valid hreflangs in the doc", () => {
-    const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
-    <!DOCTYPE html>
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-      <title>Test</title>
-      <script type="application/javascript" src="../dist/lang-checker.js"></script>
-      <link href="fr.xhtml" hreflang="fr " />
-    </head>
-    <body xml:lang="fr">
-      <p id="no-match" xml:lang="es" lang="en">Test <a href="#" hreflang="de">with a link</a></p>
-      <p id="match" xml:lang="ca" lang="ca">Test</p>
-      <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
-      
-      <p id="xml-only" xml:lang="es">Test</p>
-      <p id="space" xml:lang="it ">Test</p>
-      
-      <p id="no-bcp-1" xml:lang="fr-x">Test</p>
-      <p id="no-bcp-2" xml:lang="ca-US1">Test</p>
-      <p id="no-bcp-3" xml:lang="i-yolo">Test</p>
-    </body>
-    </html>`, {
-      contentType: "application/xhtml+xml"
-    }); 
-    
-    global.document = window.document;
-    global.window = window;
-
-    checker.checkHrefLangs();
-
-    assert(errorSpy.calledWith("There is a space in 'fr ' therefore it isn’t a valid BCP47 language tag for link:"));
-    assert(logSpy.calledWith("hreflangs found: de"));
-  });
-
-  it("should be able to find other valid langs in the doc", () => {
-    const { window } = new JSDOM(`<?xml version="1.0" encoding="utf-8"?>
-    <!DOCTYPE html>
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-      <title>Test</title>
-      <script type="application/javascript" src="../dist/lang-checker.js"></script>
-      <link href="fr.xhtml" hreflang="fr " />
-    </head>
-    <body xml:lang="fr">
-      <p id="no-match" xml:lang="es" lang="en">Test <a href="#" hreflang="de">with a link</a></p>
-      <p id="match" xml:lang="ca" lang="ca">Test</p>
-      <p id="ascii-match" xml:lang="it" lang="IT">Test</p>
-      
-      <p id="xml-only" xml:lang="es">Test</p>
-      <p id="space" xml:lang="it ">Test</p>
-      
-      <p id="no-bcp-1" xml:lang="fr-x">Test</p>
-      <p id="no-bcp-2" xml:lang="ca-US1">Test</p>
-      <p id="no-bcp-3" xml:lang="i-yolo">Test</p>
-    </body>
-    </html>`, {
-      contentType: "application/xhtml+xml"
-    }); 
-    
-    global.document = window.document;
-    global.window = window;
-
-    checker.handleXMLLang();
-    checker.checkOtherLangs();
-
-    assert(logSpy.calledWith("Other languages found: en (36.4%), ca (9.1%), it (18.2%), es (9.1%)"));
-
-    // Test sort
-    checker.checkOtherLangs(document.body, true, false);
-    assert(logSpy.calledWith("Other languages found: en (36.4%), it (18.2%), ca (9.1%), es (9.1%)"));
-  });
-
   describe("## Visual aid", () => {
     beforeEach( () => {
       const xhtml = `<?xml version="1.0" encoding="utf-8"?>
@@ -464,7 +469,7 @@ describe("# Methods", () => {
     });
 
     it("should apply visual aid styles", async () => {
-      // We can’t check pseudo element,cf. https://github.com/jsdom/jsdom/issues/1928, so…
+      // We can’t check pseudo element, cf. https://github.com/jsdom/jsdom/issues/1928, so…
 
       checker.handleXMLLang();
       checker.visualAid();

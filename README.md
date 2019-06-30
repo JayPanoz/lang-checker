@@ -69,6 +69,8 @@ Default is `document` (to account for `link` elements in `head`).
 
 `sorted` is a boolean that enables the sorting of languages depending on their weight in the document. Default is `false`.
 
+**Note:** Percentage of each language in the document will only be accurate **after** all errors are corrected.
+
 ### visualAid(customStylesheet)
 
 `customStylesheet` is the path to a custom stylesheet for the visual aid (as a string). There is no default. See section below for further details.
