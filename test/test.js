@@ -38,9 +38,15 @@ describe("# Utils", () => {
       "fr": 0.36,
       "es": 0.18
     };
-    const log = utils.langsObjectToLog(obj);
+
+    let log = utils.langsObjectToLog(obj);
 
     expect(log).to.equal("de (9%), fr (36%), es (18%)");
+
+    // It should also sort if required
+    log = utils.langsObjectToLog(obj, true);
+
+    expect(log).to.equal("fr (36%), es (18%), de (9%)");
   });
 
   it("should return a lang is specified", () => {
