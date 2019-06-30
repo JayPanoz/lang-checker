@@ -19,7 +19,7 @@ const arrayToLog = (array) => {
 /** Converts the langs object to string and makes it more readable for logs */
 const langsObjectToLog = (obj, sorted) => {
   // Converting lang to an array of langObject (lang: weight)
-  obj = Object.keys(obj).map(key => {
+  let array = Object.keys(obj).map(key => {
     const langObj = {};
     langObj.lang = key;
     langObj.weight = obj[key];
@@ -28,16 +28,16 @@ const langsObjectToLog = (obj, sorted) => {
 
   // If sortable is true
   if (sorted) {
-    obj.sort((a, b) => b.weight - a.weight);
+    array.sort((a, b) => b.weight - a.weight);
   }
 
-  if (obj.length > 0) {
+  if (array.length > 0) {
     // We create an empty string
     let string = "";
-    for (let i = 0; i < obj.length; i++) {
-      const prop = obj[i].lang;
+    for (let i = 0; i < array.length; i++) {
+      const prop = array[i].lang;
       // for each prop we transform the value to a percentage
-      const percentage = (obj[i].weight * 100) + "%";
+      const percentage = (array[i].weight * 100) + "%";
     
       // We add the lang (prop) and its percentage to the existing string
       string += `${prop} (${percentage}), `;
@@ -83,7 +83,7 @@ const findLangForEl = (el) => {
         console.error(`'${langValue}' isn’t a valid BCP47 language tag for element:`, el);
       }
     } else {
-      // If lang specified for el have a space, then it’s invalid BCP47 so we throw an error
+      // If lang specified for el has a space, then it’s invalid BCP47 so we throw an error
       console.error(`There is a space in '${langValue}' therefore it isn’t a valid BCP47 language tag for element:`, el);
     }
   } else {
@@ -106,7 +106,7 @@ const findHreflangForLink = (link) => {
         console.error(`'${hreflangValue}' isn’t a valid BCP47 language tag for link:`, link);
       }
     } else {
-      // If lang specified for el have a space, then it’s invalid BCP47 so we throw an error
+      // If lang specified for el has a space, then it’s invalid BCP47 so we throw an error
       console.error(`There is a space in '${hreflangValue}' therefore it isn’t a valid BCP47 language tag for link:`, link);
     }
   } else {
@@ -120,6 +120,7 @@ const xmlAndLangMatch = (el) => {
   // In XML, leading and trailing spaces must be trimmed by UA
   const xmlValue = trimmer(el.getAttribute("xml:lang"));
   const langValue = el.getAttribute("lang");
+  // lang attr should be case-insensitive
   return (xmlValue.toLowerCase() === langValue.toLowerCase());
 }
 
@@ -142,7 +143,7 @@ const cloneNode = (node) => {
 const cleanNode = (node) => {
   for (let i = 0; i < node.childNodes.length; i++) {
     // We check every child node of the one we want to clean
-    var child = node.childNodes[i];
+    const child = node.childNodes[i];
     if (child.nodeType === 8 || child.nodeType === 4 || (child.nodeType === 3 && !/\S/.test(child.nodeValue))) {
       // If the childnode is a comment, a cdata, or a empty text node, we remove it and update the loop
       node.removeChild(child);
