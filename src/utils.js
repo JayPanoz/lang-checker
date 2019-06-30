@@ -7,17 +7,24 @@ const trimmer = (string) => {
 
 /** Converts an array to string and makes it more readable for logs */
 const arrayToLog = (array) => {
-  return array.toString().replace(/,/g, ", ")
+  // array.toString() will separate items with a comma
+  // so we make a regex to add a space to improve readability
+  return array.toString().replace(/,/g, ", ");
 }
 
 /** Converts the langs object to string and makes it more readable for logs */
 const langsObjectToLog = (obj) => {
+  // We create an empty string
   let string = "";
   for (let prop in obj) {
+    // for each prop we transform the value to a percentage
     const percentage = (obj[prop] * 100) + "%";
+    
+    // We add the lang (prop) and its percentage to the existing string
     string += `${prop} (${percentage}), `;
   }
-  return string.substring(0, string.length - 2)
+  // We return the string w/o the coma and space we added for the last item
+  return string.substring(0, string.length - 2);
 }
 
 /** Checks if lang is specified */
@@ -88,7 +95,8 @@ const findHreflangForLink = (link) => {
 
 /** Checks if xml:lang and lang values match */
 const xmlAndLangMatch = (el) => {
-  const xmlValue = el.getAttribute("xml:lang");
+  // In XML, leading and trailing spaces must be trimmed by UA
+  const xmlValue = trimmer(el.getAttribute("xml:lang"));
   const langValue = el.getAttribute("lang");
   return (xmlValue.toLowerCase() === langValue.toLowerCase());
 }
@@ -111,11 +119,14 @@ const cloneNode = (node) => {
 /** Recursively removes comments and CDATA, and normalizes whitespace */
 const cleanNode = (node) => {
   for (let i = 0; i < node.childNodes.length; i++) {
+    // We check every child node of the one we want to clean
     var child = node.childNodes[i];
     if (child.nodeType === 8 || child.nodeType === 4 || (child.nodeType === 3 && !/\S/.test(child.nodeValue))) {
+      // If the childnode is a comment, a cdata, or a empty text node, we remove it and update the loop
       node.removeChild(child);
       i--;
     } else if (child.nodeType === 1) {
+      // If it’s an element node, we run the function recursively
       cleanNode(child);
     }
   }
@@ -123,6 +134,7 @@ const cleanNode = (node) => {
 
 /** Removes scripts and styles from a node */
 const sanitizeNode = (node) => {
+  // We want to remove inline scripts and styles, and the visual aid switch the lib is adding
   const elementsToRemove = node.querySelectorAll("script, style, #langChecker-aid-label");
   for (let i = 0; i < elementsToRemove.length; i++) {
     const elementToRemove = elementsToRemove[i];
@@ -132,15 +144,21 @@ const sanitizeNode = (node) => {
 
 /** Returns the text content of a node w/o scripts, styles, comments, etc. */
 const getTextContent = (node) => {
+  // We clone the node so that the real one is left untouched in the DOM
   const clone = cloneNode(node);
+  // We remove comments, cdata, and normalize whitespace
   cleanNode(clone);
+  // We remove inline scripts and styles
   sanitizeNode(clone);
+  // We return the textContent of this modified clone
   return clone.textContent;
 }
 
 /** Computes the weight of text for a language in a given reference (textContent) */
 const getWeight = (node, referenceText = getTextContent(document.body)) => {
+  // We get the text content of the node
   const nodeContent = getTextContent(node);
+  // We return the division of the two params as a three digits number
   return parseFloat((nodeContent.length / referenceText.length).toFixed(3));
 }
 

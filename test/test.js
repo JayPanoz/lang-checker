@@ -104,6 +104,12 @@ describe("# Utils", () => {
     
     expect(match).to.be.true;
 
+    // We must trim xml:lang in XML
+    el.setAttribute("xml:lang", "en ");
+    match = utils.xmlAndLangMatch(el);
+
+    expect(match).to.be.true;
+
     el.setAttribute("lang", "");
     match = utils.xmlAndLangMatch(el);
 
