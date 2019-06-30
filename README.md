@@ -8,13 +8,17 @@ From gist: https://gist.github.com/gregoriopellegrino/c94c46933d660a3db233e7a1c9
 
 ## Usage
 
-In browsers, first load the lib:
+Either download the entire repository or the [lang-checker.js file](dist/lang-checker.js) (right-click on “Raw” then download).
+
+The lib has been primarily designed for usage in browsers as it’s extensively relying on the console (in dev tools) and will report logs, warnings and errors there.
+
+Then load the lib in your doc:
 
 ```
 <script type="application/javascript" src="lang-checker.js"></script>
 ```
 
-Then use its methods:
+Finally you can use its public methods:
 
 ```
 <script type="application/javascript">
@@ -36,24 +40,6 @@ Then use its methods:
 ```
 
 Check [example.xhtml](example.xhtml) for a practical example.
-
-## Build and test
-
-To build the dist script/lib:
-
-```
-npm run build
-```
-
-This will transpile (ES5) and bundle `src` into `bundle/` (via webpack).
-
-To test: 
-
-```
-npm test
-```
-
-This will run unit tests with mocha.
 
 ## Methods and their parameters
 
@@ -77,7 +63,7 @@ Default is `document`.
 
 Default is `document` (to account for `link` elements in `head`).
 
-### checkOtherLangs(sorted, ctx)
+### checkOtherLangs(ctx, sorted)
 
 `ctx` is the context in which the function must run and check `lang`. It expects an element. Default is `document.body`.
 
@@ -116,3 +102,41 @@ Default styles are:
   left: -5px;
 }
 ```
+
+## Dev
+
+### Install
+
+You can either fork the repo if you aim to help improve the lib via PRs. Or you can clone it directly if you don’t.
+
+```
+git clone https://github.com/JayPanoz/lang-checker.git
+```
+
+Then cd into the lang-checker folder and: 
+
+```
+npm install
+```
+
+This will install all dependencies automatically, and set up build (webpack, babel) + automated tests (mocha, chai, sinon, JSDOM).
+
+### Build
+
+To build the dist script/lib after making changes to `src` files:
+
+```
+npm run build
+```
+
+This will transpile and bundle `src` into `dist/` (using webpack + babel).
+
+### Test
+
+To run automated tests: 
+
+```
+npm test
+```
+
+This will run unit tests with mocha. Note the `console` usage of the script will be output.
