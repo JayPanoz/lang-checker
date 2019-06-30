@@ -104,6 +104,12 @@ describe("# Utils", () => {
     
     expect(match).to.be.true;
 
+    // We must trim xml:lang in XML
+    el.setAttribute("xml:lang", "en ");
+    match = utils.xmlAndLangMatch(el);
+
+    expect(match).to.be.true;
+
     el.setAttribute("lang", "");
     match = utils.xmlAndLangMatch(el);
 
@@ -385,10 +391,9 @@ describe("# Methods", () => {
 
     assert(logSpy.calledWith("Other languages found: en (36.4%), ca (9.1%), it (18.2%), es (9.1%)"));
 
-    checker.checkOtherLangs(document.body, true);
-
-    assert(logSpy.calledWith("Other languages found: en (36.4%), ca (9.1%), it (18.2%), es (9.1%)"));
-    assert(logSpy.calledWith("hreflangs found: de"));
+    // Test sort
+    checker.checkOtherLangs(document.body, true, false);
+    assert(logSpy.calledWith("Other languages found: en (36.4%), it (18.2%), ca (9.1%), es (9.1%)"));
   });
 
   describe("## Visual aid", () => {

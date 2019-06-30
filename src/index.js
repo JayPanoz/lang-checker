@@ -55,7 +55,7 @@ const checkMainLang = (root = document.documentElement, body = document.body) =>
 }
 
 /** Tries to find all hreflangs in the doc */
-const checkHrefLangs = (ctx = document.documentElement) => {
+const checkHrefLangs = (ctx = document) => {
   let hrefLangs = [];
   const links = ctx.querySelectorAll(`link[hreflang], a[hreflang]`);
   for (let i = 0; i < links.length; i++) {
@@ -70,7 +70,7 @@ const checkHrefLangs = (ctx = document.documentElement) => {
 }
 
 /** Tries to find all other langs and their percentage in the doc */
-const checkOtherLangs = (ctx = document.body, hreflangCheck = false) => {
+const checkOtherLangs = (ctx = document.body, sorted = false) => {
   // Other languages start here, with an empty object
   let langs = {};
   // We check all elements in body with a lang attribute
@@ -94,11 +94,7 @@ const checkOtherLangs = (ctx = document.body, hreflangCheck = false) => {
     }
   }
   // Finally we log all the other languages found.
-  console.log(`Other languages found: ${utils.langsObjectToLog(langs)}`);
-
-  if (hreflangCheck) {
-    checkHrefLangs();
-  }
+  console.log(`Other languages found: ${utils.langsObjectToLog(langs, sorted)}`);
 }
 
 const visualAid = (customStylesheet) => {
