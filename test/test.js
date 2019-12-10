@@ -196,6 +196,11 @@ describe("# Utils", () => {
 });
 
 describe("# Methods", () => {
+  // Stub console so that it doesn’t print to stdout when running tests
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+
   let logSpy;
   let warnSpy;
   let errorSpy;
