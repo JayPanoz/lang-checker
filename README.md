@@ -143,4 +143,4 @@ To run automated tests:
 npm test
 ```
 
-This will run unit tests with mocha. Note the `console` usage of the script will be output.
+This will run unit tests with mocha. Note the `console` is stubbed so that it doesn’t print usage to `stdout`.

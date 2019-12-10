@@ -25,6 +25,11 @@ describe("# Utils", () => {
   global.document = window.document;
   global.window = window;
 
+  // Stub console so that it doesn’t print to stdout when running tests
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+
   it("should transform an array into a readable log", () => {
     let array = ["de","fr","es"];
     let log = utils.arrayToLog(array);
